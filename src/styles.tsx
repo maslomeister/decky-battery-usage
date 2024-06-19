@@ -12,12 +12,10 @@ export const pager_container: CSSProperties = {
   alignItems: "center",
 };
 
-export const VerticalContainerCSS = {
-  vertical__container: {
-    display: "flex",
-    flexDirection: "column",
-    alignContent: "space-between",
-  } as CSSProperties,
+export const vertical_container: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignContent: "space-between",
 };
 
 export const focus_panel_no_padding: CSSProperties = {
