@@ -12,11 +12,15 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: "steam",
+      default: "white",
       values: [
         {
           name: "steam",
           value: "#0D141C",
+        },
+        {
+          name: "white",
+          value: "#ffffff",
         },
       ],
     },

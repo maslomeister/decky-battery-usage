@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import { findNewDimensions } from "../utils/utils";
 import { debugBorderEnabled } from ".";
+import { AXIS_COLOR, AXIS_LABEL_COLOR } from "./styles";
 
 type Props = {
   parentDimensions: { width: number; height: number };
@@ -96,18 +97,18 @@ export const MainGraph = ({ parentDimensions }: Props) => {
               height: "2px",
               width: dimensions.width,
               top: line.position,
-              background: "#48484a",
+              background: AXIS_COLOR,
               content: "",
             }}
           >
             <p
               style={{
-                color: "#5b5b5d",
+                color: AXIS_LABEL_COLOR,
                 padding: "0px",
-                top: -5,
+                top: -8,
                 margin: "0px",
                 position: "absolute",
-                fontSize: "12px",
+                fontSize: "16px",
                 left: dimensions.width + 8,
               }}
             >
@@ -131,22 +132,22 @@ export const MainGraph = ({ parentDimensions }: Props) => {
               background: `repeating-linear-gradient(
 								to bottom,
 								transparent,
-								transparent 6px,
-								#48484a 6px,
-								#48484a 8px
+								transparent 8px,
+								${AXIS_COLOR} 8px,
+								${AXIS_COLOR} 14px
 							)`,
               content: "",
             }}
           >
             <p
               style={{
-                color: "#5b5b5d",
+                color: AXIS_LABEL_COLOR,
                 padding: "0px",
-                top: dimensions.height + 22,
+                top: dimensions.height + 18,
                 margin: "0px",
                 right: 4,
                 position: "absolute",
-                fontSize: "12px",
+                fontSize: "16px",
               }}
             >
               {line.axisLabel}
@@ -164,7 +165,7 @@ export const MainGraph = ({ parentDimensions }: Props) => {
           width: 2,
           top: 0,
           left: verticalLines[verticalLines.length - 1].position - 2,
-          background: "#48484a",
+          background: AXIS_COLOR,
           content: "",
         }}
       />

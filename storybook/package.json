@@ -26,5 +26,9 @@
     "react-dom": "^18.3.1",
     "storybook": "^8.1.10",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "decky-frontend-lib": "^3.25.0",
+    "recharts": "^2.12.7"
   }
 }
