@@ -4,7 +4,6 @@ from dataclasses import dataclass
 import datetime
 import logging
 import sqlite3
-from typing import List
 
 from python.db.sqlite_db import SqlLiteDb
 
@@ -26,28 +25,37 @@ class DailyGameTimeDto:
     time: int
 
 
+@dataclass
+class UsageRecord:
+    date_time: datetime.datetime
+    capacity: int
+    status: int
+    power: int
+    game_id: str
+    game_name: str
+
+
 class Dao:
     def __init__(self, db: SqlLiteDb):
         self._db = db
 
-    def save_game_dict(
-            self,
-            game_id: str,
-            game_name: str) -> None:
+    def save_game_dict(self, game_id: str, game_name: str) -> None:
         with self._db.transactional() as connection:
             self._save_game_dict(connection, game_id, game_name)
 
     def save_battery_usage(
-            self,
-            date_time: datetime.datetime,
-            capacity: int,
-            status: int,
-            power: int,
-            game_id: str,
-            source: str = None) -> None:
+        self,
+        date_time: datetime.datetime,
+        capacity: int,
+        status: int,
+        power: int,
+        game_id: str,
+        source: str = None,
+    ) -> None:
         with self._db.transactional() as connection:
-            self._save_battery_usage(connection, date_time, capacity,
-                                     status, power, game_id, source)
+            self._save_battery_usage(
+                connection, date_time, capacity, status, power, game_id, source
+            )
 
     # def apply_manual_time_for_game(
     #     self,
@@ -117,10 +125,8 @@ class Dao:
     #     ).fetchone()[0] > 0
 
     def _save_game_dict(
-            self,
-            connection: sqlite3.Connection,
-            game_id: str,
-            game_name: str):
+        self, connection: sqlite3.Connection, game_id: str, game_name: str
+    ):
         connection.execute(
             """
                 INSERT INTO game_dict (game_id, name)
@@ -128,7 +134,7 @@ class Dao:
                 ON CONFLICT (game_id) DO UPDATE SET name = :game_name
                 WHERE name != :game_name
                 """,
-            {"game_id": game_id, "game_name": game_name}
+            {"game_id": game_id, "game_name": game_name},
         )
 
     # def fetch_overall_playtime(self) -> List[GameTimeDto]:
@@ -136,20 +142,21 @@ class Dao:
     #         return self._fetch_overall_playtime(connection)
 
     def _save_battery_usage(
-            self,
-            connection: sqlite3.Connection,
-            date_time: datetime.datetime,
-            capacity: int,
-            status: int,
-            power: int,
-            game_id: str,
-            source: str = None):
+        self,
+        connection: sqlite3.Connection,
+        date_time: datetime.datetime,
+        capacity: int,
+        status: int,
+        power: int,
+        game_id: str,
+        source: str = None,
+    ):
         connection.execute(
             """
                 INSERT INTO battery_usage(date_time, capacity, status, power, game_id, migrated)
                 VALUES (?,?,?,?,?,?)
                 """,
-            (date_time.isoformat(), capacity, status, power, game_id, source)
+            (date_time.isoformat(), capacity, status, power, game_id, source),
         )
         # self._append_overall_time(connection, game_id, time_s)
 
