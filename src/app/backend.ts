@@ -37,10 +37,6 @@ export class Backend {
           });
           break;
 
-        case "GameWasRunningBefore":
-          await instance.changeGame(event.game);
-          break;
-
         case "ResumeFromSuspend":
           break;
 
@@ -54,11 +50,13 @@ export class Backend {
     await this.serverApi
       .callPluginMethod<
         {
-          game: Game;
+          game_id: string;
+          game_name: string;
         },
         void
       >("set_game", {
-        game: game,
+        game_id: game.id,
+        game_name: game.name,
       })
       .then((r) => {
         if (!r.success) {
