@@ -4,10 +4,8 @@ import { Game } from "./model";
 import { Mountable } from "./system";
 
 export type Events =
-  | { type: "GameWasRunningBefore"; createdAt: number; game: Game }
   | { type: "GameStarted"; createdAt: number; game: Game }
   | { type: "GameStopped"; createdAt: number; game: Game }
-  | { type: "Suspended"; createdAt: number; game: Game | null }
   | { type: "ResumeFromSuspend"; createdAt: number; game: Game | null }
   | { type: "Unmount"; createdAt: number; mounts: Mountable[] }
   | { type: "Mount"; createdAt: number; mounts: Mountable[] }
