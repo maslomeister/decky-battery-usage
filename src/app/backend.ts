@@ -27,15 +27,18 @@ export class Backend {
     eventBus.addSubscriber(async (event) => {
       switch (event.type) {
         case "GameStarted":
-          await instance.changeGameId(event.game.id);
+          await instance.changeGame(event.game);
           break;
 
         case "GameStopped":
-          await instance.changeGameId("Unknown");
+          await instance.changeGame({
+            id: "Unknown",
+            name: "Steam",
+          });
           break;
 
         case "GameWasRunningBefore":
-          await instance.changeGameId(event.game.id);
+          await instance.changeGame(event.game);
           break;
 
         case "ResumeFromSuspend":
@@ -43,26 +46,19 @@ export class Backend {
 
         case "Unmount":
           break;
-
-        // case "CommitInterval":
-        //   await instance.addTime(event.startedAt, event.endedAt, event.game);
-        //   break;
-
-        // case "TimeManuallyAdjusted":
-        //   break;
       }
     });
   }
 
-  private async changeGameId(game_id: string) {
+  private async changeGame(game: Game) {
     await this.serverApi
       .callPluginMethod<
         {
-          game_id: string;
+          game: Game;
         },
         void
-      >("set_game_id", {
-        game_id: game_id,
+      >("set_game", {
+        game: game,
       })
       .then((r) => {
         if (!r.success) {
