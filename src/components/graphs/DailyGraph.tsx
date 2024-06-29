@@ -10,7 +10,7 @@ import {
 export type GraphProps = {
   data: {
     hour: number;
-    charge: number;
+    capacity: number;
   }[];
 };
 
@@ -33,13 +33,13 @@ export const DailyGraph = ({ data }: GraphProps) => {
           tickLine={true}
         />
         <YAxis
-          dataKey="charge"
+          dataKey="capacity"
           domain={[0, 100]}
           tickCount={3}
           axisLine={true}
           tickLine={true}
         />
-        <Bar legendType="none" dataKey="charge" fill="#00da2c" />
+        <Bar legendType="none" dataKey="capacity" fill="#00da2c" />
       </ComposedChart>
     </ResponsiveContainer>
   );

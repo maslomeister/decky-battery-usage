@@ -2,8 +2,7 @@
 
 import { ServerAPI } from "decky-frontend-lib";
 import logger from "../utils";
-import { toIsoDateOnly } from "./formatters";
-import { DailyStatistics, Game, GameWithTime } from "./model";
+import { DailyStatistics, Game } from "./model";
 import { EventBus } from "./system";
 
 export interface OverallPlayTimes {
