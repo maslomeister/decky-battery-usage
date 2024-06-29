@@ -71,6 +71,12 @@ class Plugin:
             self.game_name = game_name
         return True
 
+    async def hourly_statistics(self):
+        try:
+            return await self.statistics.hourly_battery_usage_statistics()
+        except Exception:
+            logger.exception("Unhandled exception")
+
     async def recorder(self):
         volt_file = open(battery_volt_dir)
         curr_file = open(battery_curr_dir)

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import datetime
 import logging
 import sqlite3
+from typing import List
 
 from python.db.sqlite_db import SqlLiteDb
 
@@ -11,27 +12,11 @@ logger = logging.getLogger()
 
 
 @dataclass
-class GameTimeDto:
-    game_id: int
-    game_name: str
-    time: int
-
-
-@dataclass
-class DailyGameTimeDto:
-    date: str
-    game_id: int
-    game_name: str
-    time: int
-
-
-@dataclass
-class UsageRecord:
-    date_time: datetime.datetime
+class HourlyBatterUsage:
+    date_time: str
     capacity: int
     status: int
     power: int
-    game_id: str
     game_name: str
 
 
@@ -78,13 +63,11 @@ class Dao:
     #                 connection, create_at, delta_time, game_id, source
     #             )
 
-    # def fetch_per_day_time_report(
-    #     self,
-    #     begin: type[datetime.datetime],
-    #     end: type[datetime.datetime]
-    # ) -> List[DailyGameTimeDto]:
-    #     with self._db.transactional() as connection:
-    #         return self._fetch_per_day_time_report(connection, begin, end)
+    def fetch_per_hour_battery_usage_report(
+        self, begin: type[datetime.datetime], end: type[datetime.datetime]
+    ) -> List[HourlyBatterUsage]:
+        with self._db.transactional() as connection:
+            return self._fetch_per_hour_battery_usage_report(connection, begin, end)
 
     # def is_there_is_data_before(
     #     self, date: type[datetime.datetime]
@@ -189,31 +172,32 @@ class Dao:
     #         """
     #     ).fetchall()
 
-    # def _fetch_per_day_time_report(
-    #     self,
-    #     connection: sqlite3.Connection,
-    #     begin: type[datetime.datetime],
-    #     end: type[datetime.datetime]
-    # ) -> List[DailyGameTimeDto]:
-    #     connection.row_factory = lambda c, row: DailyGameTimeDto(
-    #         date=row[0], game_id=row[1], game_name=row[2], time=row[3])
-    #     result = connection.execute(
-    #         """
-    #             SELECT STRFTIME('%Y-%m-%d', UNIXEPOCH(date_time), 'unixepoch') as date,
-    #                 pt.game_id as game_id,
-    #                 gd.name as game_name,
-    #                 SUM(duration) as total_time,
-    #                 duration as total_time
-    #             FROM play_time pt
-    #                     LEFT JOIN game_dict gd ON pt.game_id = gd.game_id
-    #             WHERE UNIXEPOCH(date_time) BETWEEN UNIXEPOCH(:begin) AND
-    #                 UNIXEPOCH(:end)
-    #             AND migrated IS NULL
-
-    #             GROUP BY STRFTIME('%Y-%m-%d', UNIXEPOCH(date_time), 'unixepoch'),
-    #                      pt.game_id,
-    #                      gd.name
-    #         """,
-    #         {"begin": begin.isoformat(), "end": end.isoformat()}
-    #     ).fetchall()
-    #     return result
+    def _fetch_per_hour_battery_usage_report(
+        self,
+        connection: sqlite3.Connection,
+        begin: type[datetime.datetime],
+        end: type[datetime.datetime],
+    ) -> List[HourlyBatterUsage]:
+        connection.row_factory = lambda c, row: HourlyBatterUsage(
+            date_time=row[0],
+            capacity=row[1],
+            status=row[2],
+            power=row[3],
+            game_name=row[4],
+        )
+        result = connection.execute(
+            """
+                SELECT STRFTIME('%Y-%m-%d %H', UNIXEPOCH(date_time), 'unixepoch') as date_time,
+                    pt.capacity as capacity,
+                    pt.status as status,
+                    pt.power as power,
+                    gd.name as game_name
+                FROM battery_usage pt
+                    LEFT JOIN game_dict gd ON pt.game_id = gd.game_id
+                WHERE UNIXEPOCH(date_time) BETWEEN UNIXEPOCH(:begin) AND
+                    UNIXEPOCH(:end)
+                AND migrated IS NULL
+            """,
+            {"begin": begin.isoformat(), "end": end.isoformat()},
+        ).fetchall()
+        return result
