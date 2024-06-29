@@ -36,7 +36,7 @@ def add_plugin_to_path():
 
 add_plugin_to_path()
 
-from python.db.dao import GameTimeDto
+
 from python.db.sqlite_db import SqlLiteDb
 from python.db.dao import Dao
 from python.db.migration import DbMigration
@@ -61,8 +61,8 @@ class Plugin:
             self.usage_tracking = UsageTracking(dao)
             loop = asyncio.get_event_loop()
             self._recorder_task = loop.create_task(Plugin.recorder(self))
-        except Exception:
-            logger.exception("Unhandled exception")
+        except Exception as e:
+            logger.exception(f"Unhandled exception: {e}")
 
     async def set_game(self, game_id: str, game_name: str):
         logger.info(f"Setting Game as {game_id} and {game_name}")
@@ -74,8 +74,8 @@ class Plugin:
     async def hourly_statistics(self):
         try:
             return await self.statistics.hourly_battery_usage_statistics()
-        except Exception:
-            logger.exception("Unhandled exception")
+        except Exception as e:
+            logger.exception(f"Unhandled exception: {e}")
 
     async def recorder(self):
         volt_file = open(battery_volt_dir)
@@ -132,7 +132,7 @@ class Plugin:
                     logger.info("Recorder added avg sample to DB")
 
                     running_list = []
-            except Exception:
-                logger.exception("recorder")
+            except Exception as e:
+                logger.exception(f"Unhandled exception: {e}")
 
             await asyncio.sleep(12)
