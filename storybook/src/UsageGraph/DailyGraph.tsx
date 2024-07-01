@@ -12,6 +12,7 @@ export type GraphProps = {
   data: {
     hour: string;
     capacity: number;
+    charging: number;
   }[];
 };
 
@@ -42,7 +43,7 @@ export const DailyGraph = ({ data }: GraphProps) => {
             tickLine={true}
           />
           <Area
-            type="stepBefore"
+            type="bump"
             dataKey="charging"
             fill="#01da2c65"
             stroke="#01da2c65"
