@@ -3,7 +3,7 @@
   "author": "maslomeister",
   "flags": [],
   "publish": {
-    "tags": ["template", "root"],
+    "tags": ["utility", "battery-tracking", "battery"],
     "description": "Monitor battery usage of your steam deck with ease",
     "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
   }
