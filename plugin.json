@@ -4,7 +4,7 @@
   "flags": ["debug", "_root"],
   "publish": {
     "tags": ["template", "root"],
-    "description": "Accurately monitor battery usage of your steam deck with ease",
+    "description": "Monitor battery usage of your steam deck with ease",
     "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
   }
 }
