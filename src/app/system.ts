@@ -2,19 +2,8 @@
 
 import logger from "../utils";
 import { Events } from "./events";
-// import { TimeManipulation } from "./time-manipulation";
-// import { Reports } from "./reports";
-// import { PlayTimeSettings, Settings } from "./settings";
 
-export {
-  Clock,
-  EventBus,
-  MountManager,
-  systemClock,
-  Mountable,
-  // LocatorDependencies,
-  // Locator as Locator,
-};
+export { Clock, EventBus, MountManager, systemClock, Mountable };
 
 let systemClock = {
   getTimeMs() {
@@ -78,18 +67,3 @@ class EventBus {
     this.subscribers.push(subscriber);
   }
 }
-
-// interface Locator {
-//   reports: Reports;
-//   currentSettings: PlayTimeSettings;
-//   settings: Settings;
-//   sessionPlayTime: SessionPlayTime;
-//   timeManipulation: TimeManipulation;
-// }
-
-// interface LocatorDependencies {
-//   reports: Reports;
-//   settings: Settings;
-//   sessionPlayTime: SessionPlayTime;
-//   timeManipulation: TimeManipulation;
-// }

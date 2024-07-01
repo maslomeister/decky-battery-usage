@@ -2,18 +2,8 @@
 
 import { ServerAPI } from "decky-frontend-lib";
 import logger from "../utils";
-import { DailyStatistics, Game } from "./model";
+import { Game } from "./model";
 import { EventBus } from "./system";
-
-export interface OverallPlayTimes {
-  [gameId: string]: number;
-}
-
-export interface StatisticForIntervalResponse {
-  data: DailyStatistics[];
-  hasPrev: boolean;
-  hasNext: boolean;
-}
 
 export class Backend {
   private serverApi: ServerAPI;
@@ -37,6 +27,21 @@ export class Backend {
           break;
 
         case "ResumeFromSuspend":
+          if (event.game) {
+            await instance.changeGame(event.game);
+          } else {
+            await instance.changeGame({
+              id: "Unknown",
+              name: "STEAM",
+            });
+          }
+          break;
+
+        case "Suspended":
+          await instance.changeGame({
+            id: "Unknown",
+            name: "STEAM",
+          });
           break;
 
         case "Unmount":

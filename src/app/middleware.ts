@@ -26,24 +26,6 @@ class SteamEventMiddleware implements Mountable {
       });
     }
 
-    // hook login state (user login/logout)
-    // this.activeHooks.push(
-    //   SteamClient.User.RegisterForLoginStateChange((username: string) => {
-    //     if (username) {
-    //       this.eventBus.emit({
-    //         type: "UserLoggedIn",
-    //         createdAt: this.clock.getTimeMs(),
-    //         username: username,
-    //       });
-    //     } else {
-    //       this.eventBus.emit({
-    //         type: "UserLoggedOut",
-    //         createdAt: this.clock.getTimeMs(),
-    //       });
-    //     }
-    //   })
-    // );
-
     this.activeHooks.push(
       SteamClient.GameSessions.RegisterForAppLifetimeNotifications(
         async (data: LifetimeNotification) => {
