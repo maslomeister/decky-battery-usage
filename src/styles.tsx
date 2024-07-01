@@ -1,5 +1,4 @@
 import { CSSProperties } from "react";
-import { FocusableExt } from "./components/FocusableExt";
 
 export const BLUE_COLOR = "#1A9FFF";
 export const GREEN = "#00da2c";
