@@ -45,7 +45,7 @@ export const DailyGraph = ({ data }: GraphProps) => {
             tickLine={true}
           />
           <Area
-            type="stepBefore"
+            type="bump"
             dataKey="charging"
             fill={DESATURED_GREEN}
             stroke={DESATURED_GREEN}
