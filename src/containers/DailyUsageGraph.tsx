@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DailyGraph } from "../components/graphs/DailyGraph";
 import { PanelSection, ServerAPI, Spinner } from "decky-frontend-lib";
 import { FocusableExt } from "../components/FocusableExt";
-import { BLUE_COLOR, hide_text_on_overflow } from "../styles";
+import { BLUE_COLOR, DESATURED_GREY, hide_text_on_overflow } from "../styles";
 import { HorizontalContainer } from "../components/HorizontalContainer";
 
 type Props = {
@@ -12,7 +12,10 @@ type Props = {
 export const DailyUsageGraph = ({ serverApi }: Props) => {
   const [data, setData] = useState<{
     battery_usage: { hour: string; capacity: number }[];
-    game_percentage: { game_name: string; percentage: number }[];
+    game_percentage: {
+      games: { game_name: string; percentage: number }[];
+      suspended: number;
+    };
   }>();
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +27,10 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
         [],
         {
           battery_usage: { hour: string; capacity: number }[];
-          game_percentage: { game_name: string; percentage: number }[];
+          game_percentage: {
+            games: { game_name: string; percentage: number }[];
+            suspended: number;
+          };
         }
       >("hourly_statistics", {});
 
@@ -57,7 +63,7 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
         data.battery_usage.length > 0 &&
         data.game_percentage && (
           <PanelSection title="Usage by game">
-            {data.game_percentage.map((item) => (
+            {data.game_percentage.games.map((item) => (
               <FocusableExt>
                 <HorizontalContainer>
                   <div style={hide_text_on_overflow}>{item.game_name}</div>
@@ -67,6 +73,14 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
                 </HorizontalContainer>
               </FocusableExt>
             ))}
+            {data.game_percentage.suspended > 0 && (
+              <FocusableExt style={{ marginTop: "16px", fontWeight: 600 }}>
+                <HorizontalContainer>
+                  <div style={hide_text_on_overflow}>SUSPENDED</div>
+                  <div>{data.game_percentage.suspended}%</div>
+                </HorizontalContainer>
+              </FocusableExt>
+            )}
           </PanelSection>
         )}
     </>
