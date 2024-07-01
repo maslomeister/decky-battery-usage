@@ -14,6 +14,7 @@ export type GraphProps = {
   data: {
     hour: string;
     capacity: number;
+    charging: number;
   }[];
 };
 
