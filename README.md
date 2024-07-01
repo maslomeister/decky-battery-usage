@@ -1,6 +1,6 @@
 # Battery Usage plugin for Decky
 
-![BatteryUsage Preview](assets/plugin.jpg)
+<img src="https://github.com/maslomeister/decky-battery-usage/blob/main/assets/plugin.jpg?raw=true" width="400" />
 
 Battery Usage is a plugin for [Decky](https://github.com/SteamDeckHomebrew/decky-loader) that shows past day battery usage with additional info about each game that was played in that time
 
