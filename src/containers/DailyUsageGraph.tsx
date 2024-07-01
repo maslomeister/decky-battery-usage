@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DailyGraph } from "../components/graphs/DailyGraph";
 import { PanelSection, ServerAPI, Spinner } from "decky-frontend-lib";
 import { FocusableExt } from "../components/FocusableExt";
-import { BLUE_COLOR, DESATURED_GREY, hide_text_on_overflow } from "../styles";
+import { BLUE_COLOR, hide_text_on_overflow } from "../styles";
 import { HorizontalContainer } from "../components/HorizontalContainer";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 
 export const DailyUsageGraph = ({ serverApi }: Props) => {
   const [data, setData] = useState<{
-    battery_usage: { hour: string; capacity: number }[];
+    battery_usage: { hour: string; capacity: number; charging: number }[];
     game_percentage: {
       games: { game_name: string; percentage: number }[];
       suspended: number;
@@ -26,7 +26,7 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
       const data = await serverApi.callPluginMethod<
         [],
         {
-          battery_usage: { hour: string; capacity: number }[];
+          battery_usage: { hour: string; capacity: number; charging: number }[];
           game_percentage: {
             games: { game_name: string; percentage: number }[];
             suspended: number;
