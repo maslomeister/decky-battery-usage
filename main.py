@@ -1,4 +1,4 @@
-# credits to https://github.com/ma3a/SDH-PlayTime
+# credits to https://github.com/ma3a/SDH-PlayTime and https://github.com/safijari/steam-deck-battery-tracker
 
 import time
 import asyncio
