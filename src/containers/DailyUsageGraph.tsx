@@ -17,7 +17,7 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("mount get data");
+    // console.log("mount get data");
     // declare the data fetching function
     const fetchData = async () => {
       const data = await serverApi.callPluginMethod<
