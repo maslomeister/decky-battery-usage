@@ -1,3 +1,5 @@
+//  credits to https://github.com/ma3a/SDH-PlayTime
+
 import { Focusable } from "decky-frontend-lib";
 import { focus_panel_no_padding } from "../styles";
 

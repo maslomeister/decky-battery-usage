@@ -1,3 +1,5 @@
+//  credits to https://github.com/ma3a/SDH-PlayTime
+
 import { VerticalContainerCSS } from "../styles";
 
 export const VerticalContainer: React.FC<{}> = (props) => {
