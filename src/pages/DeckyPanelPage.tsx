@@ -1,38 +1,14 @@
-// import { ButtonItem, PanelSection, PanelSectionRow } from "decky-frontend-lib";
-// import {
-//   DETAILED_REPORT_ROUTE,
-//   SETTINGS_ROUTE,
-//   navigateToPage,
-// } from "./navigation";
-import { VFC } from "react";
 import { DailyUsageGraph } from "../containers/DailyUsageGraph";
-// import { ReportWeekly } from "../containers/ReportWeekly";
-// import { CurrentPlayTime } from "../containers/CurrentPlayTime";
+import { ServerAPI } from "decky-frontend-lib";
 
-export const DeckyPanelPage: VFC<{}> = () => {
+type Props = {
+  serverApi: ServerAPI;
+};
+
+export const DeckyPanelPage = ({ serverApi }: Props) => {
   return (
     <div>
-      <DailyUsageGraph />
-      {/* <CurrentPlayTime /> */}
-      {/* <ReportWeekly /> */}
-      {/* <PanelSection title="Misc">
-        <PanelSectionRow>
-          <ButtonItem
-            layout="below"
-            onClick={() => navigateToPage(DETAILED_REPORT_ROUTE)}
-          >
-            Detailed report
-          </ButtonItem>
-        </PanelSectionRow>
-        <PanelSectionRow>
-          <ButtonItem
-            layout="below"
-            onClick={() => navigateToPage(SETTINGS_ROUTE)}
-          >
-            Open settings
-          </ButtonItem>
-        </PanelSectionRow>
-      </PanelSection> */}
+      <DailyUsageGraph serverApi={serverApi} />
     </div>
   );
 };
