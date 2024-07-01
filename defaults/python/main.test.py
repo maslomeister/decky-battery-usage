@@ -48,7 +48,7 @@ class Plugin:
 
     async def hourly_statistics(self):
         try:
-            return await self.statistics.hourly_battery_usage_statistics()
+            return print(await self.statistics.hourly_battery_usage_statistics())
         except Exception as e:
             print(f"Error: {e}")
 
