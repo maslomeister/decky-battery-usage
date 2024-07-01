@@ -187,7 +187,7 @@ class Dao:
         )
         result = connection.execute(
             """
-                SELECT STRFTIME('%Y-%m-%d %H', UNIXEPOCH(date_time), 'unixepoch') as date_time,
+                SELECT STRFTIME('%Y-%m-%d %H %M', UNIXEPOCH(date_time), 'unixepoch') as date_time,
                     pt.capacity as capacity,
                     pt.status as status,
                     pt.power as power,
