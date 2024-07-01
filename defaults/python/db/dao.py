@@ -64,10 +64,11 @@ class Dao:
     #             )
 
     def fetch_per_hour_battery_usage_report(
-        self, begin: type[datetime.datetime], end: type[datetime.datetime]
+        self,
+        begin: type[datetime.datetime],
     ) -> List[HourlyBatterUsage]:
         with self._db.transactional() as connection:
-            return self._fetch_per_hour_battery_usage_report(connection, begin, end)
+            return self._fetch_per_hour_battery_usage_report(connection, begin)
 
     # def is_there_is_data_before(
     #     self, date: type[datetime.datetime]
@@ -176,7 +177,6 @@ class Dao:
         self,
         connection: sqlite3.Connection,
         begin: type[datetime.datetime],
-        end: type[datetime.datetime],
     ) -> List[HourlyBatterUsage]:
         connection.row_factory = lambda c, row: HourlyBatterUsage(
             date_time=row[0],
@@ -194,10 +194,9 @@ class Dao:
                     gd.name as game_name
                 FROM battery_usage pt
                     LEFT JOIN game_dict gd ON pt.game_id = gd.game_id
-                WHERE UNIXEPOCH(date_time) BETWEEN UNIXEPOCH(:begin) AND
-                    UNIXEPOCH(:end)
+                WHERE UNIXEPOCH(date_time) > UNIXEPOCH(:begin)
                 AND migrated IS NULL
             """,
-            {"begin": begin.isoformat(), "end": end.isoformat()},
+            {"begin": begin.isoformat()},
         ).fetchall()
         return result

@@ -41,6 +41,7 @@ from python.db.sqlite_db import SqlLiteDb
 from python.db.dao import Dao
 from python.db.migration import DbMigration
 from python.usage_tracking import UsageTracking
+from python.statistics import Statistics
 
 
 class Plugin:
@@ -52,13 +53,14 @@ class Plugin:
     async def _main(self):
         try:
             self.game_id = "Unknown"
-            self.game_name = "Steam"
+            self.game_name = "STEAM"
             db = SqlLiteDb(f"{data_dir}/battery-usage.db")
             migration = DbMigration(db)
             migration.migrate()
 
             dao = Dao(db)
             self.usage_tracking = UsageTracking(dao)
+            self.statistics = Statistics(dao)
             loop = asyncio.get_event_loop()
             self._recorder_task = loop.create_task(Plugin.recorder(self))
         except Exception as e:
