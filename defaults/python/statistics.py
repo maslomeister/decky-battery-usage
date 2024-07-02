@@ -71,7 +71,9 @@ class Statistics:
         aggregated_data = []
         for hour, entries in data_by_hour.items():
             last_entry = min(entries, key=lambda x: x.capacity)
-            aggregated_data.append({"hour": hour, "capacity": last_entry.capacity})
+            aggregated_data.append(
+                {"hour": hour, "capacity": last_entry.capacity, "charging": 0}
+            )
         i = 0
 
         while i < len(aggregated_data) - 1:
@@ -101,7 +103,7 @@ class Statistics:
                     insert_element(
                         aggregated_data,
                         i + j,
-                        {"hour": new_hour, "capacity": new_capacity},
+                        {"hour": new_hour, "capacity": new_capacity, "charging": 0},
                     )
                 # Move the index forward to account for the newly inserted elements
                 i += diff_hours
@@ -110,14 +112,18 @@ class Statistics:
         for item in aggregated_data:
             item["hour"] = f"{item['hour']:02d}"
 
-        for i in range(1, len(aggregated_data)):
-            if aggregated_data[i]["capacity"] > aggregated_data[i - 1]["capacity"]:
+        for i in range(len(aggregated_data) - 1):  # Exclude the last item in the range
+            if (
+                aggregated_data[i]["capacity"] > aggregated_data[i - 1]["capacity"]
+                or aggregated_data[i]["capacity"] < aggregated_data[i + 1]["capacity"]
+            ):
                 aggregated_data[i]["charging"] = 100
-            else:
-                aggregated_data[i]["charging"] = 0
 
-        if aggregated_data:
-            aggregated_data[0]["charging"] = 0
+        if aggregated_data[0]["capacity"] < aggregated_data[1]["capacity"]:
+            aggregated_data[-0]["charging"] = 100
+
+        if aggregated_data[-2]["capacity"] < aggregated_data[-1]["capacity"]:
+            aggregated_data[-1]["charging"] = 100
 
         game_entry_count = defaultdict(int)
 
