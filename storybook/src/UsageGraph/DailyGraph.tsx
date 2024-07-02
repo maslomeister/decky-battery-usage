@@ -28,12 +28,14 @@ export const DailyGraph = ({ data }: GraphProps) => {
             left: -20,
           }}
         >
-          <CartesianGrid strokeDasharray="1 2" strokeWidth={0.5} />
+          <CartesianGrid strokeDasharray="1 2" strokeWidth={0.4} />
           <XAxis
             dataKey="hour"
             textAnchor="start"
+            interval={2}
             axisLine={true}
             tickLine={true}
+            scale="point"
           />
           <YAxis
             dataKey="capacity"
@@ -43,12 +45,17 @@ export const DailyGraph = ({ data }: GraphProps) => {
             tickLine={true}
           />
           <Area
-            type="bump"
+            type="step"
             dataKey="charging"
             fill="#01da2c65"
             stroke="#01da2c65"
           />
-          <Bar legendType="none" dataKey="capacity" fill="#00da2c" />
+          <Bar
+            legendType="none"
+            maxBarSize={8}
+            dataKey="capacity"
+            fill="#00da2c"
+          />
         </ComposedChart>
       </ResponsiveContainer>
       {data.length === 0 && (
