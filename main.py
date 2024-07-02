@@ -67,7 +67,7 @@ class Plugin:
             logger.exception(f"Unhandled exception: {e}")
 
     async def set_game(self, game_id: str, game_name: str):
-        logger.info(f"Setting Game as {game_id} and {game_name}")
+        # logger.info(f"Setting Game as {game_id} and {game_name}")
         if self.game_id:
             self.game_id = game_id
             self.game_name = game_name
@@ -131,7 +131,7 @@ class Plugin:
 
                     self.usage_tracking.add_time(*average_sample)
 
-                    logger.info("Recorder added avg sample to DB")
+                    # logger.info("Recorder added avg sample to DB")
 
                     running_list = []
             except Exception as e:
