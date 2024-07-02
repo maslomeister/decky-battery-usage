@@ -178,9 +178,12 @@ class Statistics:
                 game_entry_percentage.items(), key=lambda x: x[1], reverse=True
             )
 
-            for i in range(int(rounding_error)):
-                game, _ = sorted_games[i % len(sorted_games)]
-                game_entry_percentage[game] += 1 / len(sorted_games)
+            if rounding_error != 0:
+                # Determine how to distribute the rounding error
+                adjustment_per_game = rounding_error / len(sorted_games)
+                for i in range(len(sorted_games)):
+                    game, _ = sorted_games[i]
+                    game_entry_percentage[game] += adjustment_per_game
 
             game_entry_percentage_list = [
                 {"game_name": game, "percentage": round(percentage)}
