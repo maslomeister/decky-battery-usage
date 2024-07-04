@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { DailyGraph } from "../components/graphs/DailyGraph";
-import { PanelSection, ServerAPI, Spinner } from "decky-frontend-lib";
-import { FocusableExt } from "../components/FocusableExt";
-import { BLUE_COLOR, hide_text_on_overflow } from "../styles";
-import { HorizontalContainer } from "../components/HorizontalContainer";
+import {
+  Field,
+  PanelSection,
+  PanelSectionRow,
+  ServerAPI,
+  Spinner,
+} from "decky-frontend-lib";
+import { BLUE_COLOR } from "../styles";
 
 type Props = {
   serverApi: ServerAPI;
@@ -52,7 +56,15 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
     <>
       <PanelSection title="Last day usage">
         {loading ? (
-          <Spinner />
+          <div
+            style={{
+              display: "flex",
+              justifyItems: "center",
+              alignItems: "center",
+            }}
+          >
+            <Spinner style={{ maxWidth: "32px", maxHeight: "32px" }} />
+          </div>
         ) : (
           <DailyGraph data={data ? data.battery_usage : []} />
         )}
@@ -64,22 +76,26 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
         data.game_percentage && (
           <PanelSection title="Usage by game">
             {data.game_percentage.games.map((item) => (
-              <FocusableExt>
-                <HorizontalContainer>
-                  <div style={hide_text_on_overflow}>{item.game_name}</div>
+              <PanelSectionRow>
+                <Field
+                  label={item.game_name}
+                  inlineWrap="keep-inline"
+                  focusable
+                >
                   <div style={{ fontWeight: 600, color: BLUE_COLOR }}>
                     {item.percentage}%
                   </div>
-                </HorizontalContainer>
-              </FocusableExt>
+                </Field>
+              </PanelSectionRow>
             ))}
             {data.game_percentage.suspended > 0 && (
-              <FocusableExt style={{ marginTop: "16px", fontWeight: 600 }}>
-                <HorizontalContainer>
-                  <div style={hide_text_on_overflow}>SUSPENDED</div>
-                  <div>{data.game_percentage.suspended}%</div>
-                </HorizontalContainer>
-              </FocusableExt>
+              <div style={{ fontWeight: 600 }}>
+                <PanelSectionRow>
+                  <Field inlineWrap="keep-inline" label="SUSPENDED" focusable>
+                    {data.game_percentage.suspended}%
+                  </Field>
+                </PanelSectionRow>
+              </div>
             )}
           </PanelSection>
         )}

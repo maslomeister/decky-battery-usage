@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { DESATURED_GREEN, GREEN } from "../../styles";
 import { VerticalContainer } from "../VerticalContainer";
+import { FocusableExt } from "../FocusableExt";
 
 export type GraphProps = {
   data: {
@@ -20,7 +21,7 @@ export type GraphProps = {
 
 export const DailyGraph = ({ data }: GraphProps) => {
   return (
-    <>
+    <FocusableExt>
       <ResponsiveContainer width="100%" height={200}>
         <ComposedChart
           data={data}
@@ -70,6 +71,6 @@ export const DailyGraph = ({ data }: GraphProps) => {
           </div>
         </VerticalContainer>
       )}
-    </>
+    </FocusableExt>
   );
 };
