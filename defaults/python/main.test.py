@@ -50,16 +50,14 @@ class Plugin:
         try:
             result = await self.statistics.hourly_battery_usage_statistics()
 
-            for game in result["game_percentage"]["games"]:
+            for game in result["games_stats"]["games"]:
                 print(f"{game['game_name']} - {game['percentage']}% - {game["hours"]}")
 
-            print(
-                f"SUSPENDED - {result["game_percentage"]["suspended"]["percentage"]}%"
-            )
+            print(f"SUSPENDED - {result["games_stats"]["suspended"]["percentage"]}%")
 
             total_percentage = (
-                sum(game["percentage"] for game in result["game_percentage"]["games"])
-                + result["game_percentage"]["suspended"]["percentage"]
+                sum(game["percentage"] for game in result["games_stats"]["games"])
+                + result["games_stats"]["suspended"]["percentage"]
             )
 
             print(f"TOTAL - {total_percentage}")

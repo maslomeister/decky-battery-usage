@@ -4,7 +4,11 @@ from python.db.dao import Dao
 from typing import List
 from collections import defaultdict
 
-from python.helpers import calculate_adjusted_percentages, insert_element
+from python.helpers import (
+    calculate_adjusted_percentages,
+    insert_element,
+    minutes_to_hours_string,
+)
 
 
 @dataclass
@@ -14,26 +18,33 @@ class UsageItem:
 
 
 @dataclass
-class PercentageItem:
+class GameItem:
     game_name: str
     percentage: int
+    hours: str
 
 
 @dataclass
-class GameEntryPercentage:
-    games: List[PercentageItem]
-    suspended: int
+class Suspended:
+    percentage: int
+    hours: str
+
+
+@dataclass
+class GamesStats:
+    games: List[GameItem]
+    suspended: Suspended
 
 
 class Statistics:
     dao: Dao
     stored_statistics: List[UsageItem]
-    game_entry_percentage: GameEntryPercentage
+    games_stats: GamesStats
 
     def __init__(self, dao: Dao) -> None:
         self.dao = dao
         self.stored_statistics = []
-        self.game_entry_percentage = []
+        self.games_stats = []
 
     async def hourly_battery_usage_statistics(self):
         if self.stored_statistics:
@@ -43,7 +54,7 @@ class Statistics:
             if current_hour == last_item_hour:
                 return {
                     "battery_usage": self.stored_statistics,
-                    "game_percentage": self.game_entry_percentage,
+                    "games_stats": self.games_stats,
                 }
 
         # Calculate the current date
@@ -52,15 +63,12 @@ class Statistics:
 
         data = self.dao.fetch_per_hour_battery_usage_report(yesterday_date)
 
-        # for item in data:
-        #     print(f"{item.date_time} {item.capacity}% {item.game_name}")
-
         if len(data) == 0:
             self.stored_statistics = []
-            self.game_entry_percentage = {"games": [], "suspended": 0}
+            self.games_stats = {"games": [], "suspended": {"percentage": 0, "hours": 0}}
             return {
                 "battery_usage": self.stored_statistics,
-                "game_percentage": self.game_entry_percentage,
+                "games_stats": self.games_stats,
             }
 
         data_by_hour = defaultdict(list)
@@ -185,38 +193,43 @@ class Statistics:
             # Calculate adjusted percentages
             adjusted_percentages = calculate_adjusted_percentages(game_entry_percentage)
 
-            game_entry_percentage_list = [
-                {"game_name": game, "percentage": round(percentage)}
-                for game, percentage in adjusted_percentages.items()
-            ]
+            # game_entry_percentage_list = [
+            #     {"game_name": game, "percentage": round(percentage)}
+            #     for game, percentage in adjusted_percentages.items()
+            # ]
 
-            suspended = next(
-                (
-                    item["percentage"]
-                    for item in game_entry_percentage_list
-                    if item["game_name"] == "SUSPENDED"
-                ),
-                0,
+            suspended = adjusted_percentages.pop("SUSPENDED", 0)
+            suspended_hours = minutes_to_hours_string(
+                game_entry_count.pop("SUSPENDED", 0)
             )
 
-            filtered_game_percentage = [
-                item
-                for item in game_entry_percentage_list
-                if item["game_name"] != "SUSPENDED"
-            ]
+            # filtered_game_percentage = [
+            #     item
+            #     for item in game_entry_percentage_list
+            #     if item["game_name"] != "SUSPENDED"
+            # ]
 
-            sorted_game_percentage = sorted(
-                filtered_game_percentage, key=lambda x: x["percentage"], reverse=True
-            )
+            # sorted_game_percentage = sorted(
+            #     filtered_game_percentage, key=lambda x: x["percentage"], reverse=True
+            # )
+            games_list = []
+            for item in game_entry_count:
+                games_list.append(
+                    {
+                        "game_name": item,
+                        "percentage": adjusted_percentages[item],
+                        "hours": minutes_to_hours_string(game_entry_count[item]),
+                    }
+                )
 
-            self.game_entry_percentage = {
-                "games": sorted_game_percentage,
-                "suspended": suspended,
+            self.games_stats = {
+                "games": games_list,
+                "suspended": {"percentage": suspended, "hours": suspended_hours},
             }
 
         self.stored_statistics = aggregated_data
 
         return {
             "battery_usage": self.stored_statistics,
-            "game_percentage": self.game_entry_percentage,
+            "games_stats": self.games_stats,
         }

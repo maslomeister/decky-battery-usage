@@ -16,12 +16,13 @@ type Props = {
 export const DailyUsageGraph = ({ serverApi }: Props) => {
   const [data, setData] = useState<{
     battery_usage: { hour: string; capacity: number; charging: number }[];
-    game_percentage: {
-      games: { game_name: string; percentage: number }[];
-      suspended: number;
+    games_stats: {
+      games: { game_name: string; percentage: number; hours: string }[];
+      suspended: { percentage: number; hours: string };
     };
   }>();
   const [loading, setLoading] = useState(true);
+  const [showHours, setShowHours] = useState(false);
 
   useEffect(() => {
     // console.log("mount get data");
@@ -31,9 +32,9 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
         [],
         {
           battery_usage: { hour: string; capacity: number; charging: number }[];
-          game_percentage: {
-            games: { game_name: string; percentage: number }[];
-            suspended: number;
+          games_stats: {
+            games: { game_name: string; percentage: number; hours: string }[];
+            suspended: { percentage: number; hours: string };
           };
         }
       >("hourly_statistics", {});
@@ -59,8 +60,9 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
           <div
             style={{
               display: "flex",
-              justifyItems: "center",
+              justifyContent: "center",
               alignItems: "center",
+              height: "128px",
             }}
           >
             <Spinner style={{ maxWidth: "32px", maxHeight: "32px" }} />
@@ -73,26 +75,36 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
       {data &&
         data.battery_usage &&
         data.battery_usage.length > 0 &&
-        data.game_percentage && (
+        data.games_stats && (
           <PanelSection title="Usage by game">
-            {data.game_percentage.games.map((item) => (
+            {data.games_stats.games.map((item) => (
               <PanelSectionRow>
                 <Field
                   label={item.game_name}
                   inlineWrap="keep-inline"
-                  focusable
+                  onClick={() => {
+                    setShowHours(!showHours);
+                  }}
                 >
                   <div style={{ fontWeight: 600, color: BLUE_COLOR }}>
-                    {item.percentage}%
+                    {showHours ? item.hours : item.percentage + "%"}
                   </div>
                 </Field>
               </PanelSectionRow>
             ))}
-            {data.game_percentage.suspended > 0 && (
+            {data.games_stats.suspended.percentage > 0 && (
               <div style={{ fontWeight: 600 }}>
                 <PanelSectionRow>
-                  <Field inlineWrap="keep-inline" label="SUSPENDED" focusable>
-                    {data.game_percentage.suspended}%
+                  <Field
+                    inlineWrap="keep-inline"
+                    label="SUSPENDED"
+                    onClick={() => {
+                      setShowHours(!showHours);
+                    }}
+                  >
+                    {showHours
+                      ? data.games_stats.suspended.hours
+                      : data.games_stats.suspended.percentage + "%"}
                   </Field>
                 </PanelSectionRow>
               </div>
