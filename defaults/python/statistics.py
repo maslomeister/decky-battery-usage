@@ -185,9 +185,16 @@ class Statistics:
 
             # Drop insignificant values
             threshold = sum(game_entry_percentage.values()) / 100
+
             game_entry_percentage = {
                 key: value
                 for key, value in game_entry_percentage.items()
+                if value >= threshold
+            }
+
+            game_entry_count = {
+                key: value
+                for key, value in game_entry_count.items()
                 if value >= threshold
             }
             # Calculate adjusted percentages
@@ -212,6 +219,7 @@ class Statistics:
             # sorted_game_percentage = sorted(
             #     filtered_game_percentage, key=lambda x: x["percentage"], reverse=True
             # )
+            # print(game_entry_count)
             games_list = []
             for item in game_entry_count:
                 games_list.append(
