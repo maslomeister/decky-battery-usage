@@ -29,11 +29,13 @@ export class Backend {
         case "ResumeFromSuspend":
           if (event.game) {
             await instance.changeGame(event.game);
+            await instance.add_time(event.game);
           } else {
             await instance.changeGame({
               id: "Unknown",
               name: "STEAM",
             });
+            await instance.add_time({ id: "Unknown", name: "STEAM" });
           }
           break;
 
@@ -72,6 +74,32 @@ export class Backend {
       .catch((_) => {
         this.errorOnBackend(
           "Can't change game_id, because of backend error (changeGameId)"
+        );
+      });
+  }
+
+  private async add_time(game: Game) {
+    await this.serverApi
+      .callPluginMethod<
+        {
+          game_id: string;
+          game_name: string;
+        },
+        void
+      >("add_time", {
+        game_id: game.id,
+        game_name: game.name,
+      })
+      .then((r) => {
+        if (!r.success) {
+          this.errorOnBackend(
+            "Can't add time on resume from suspend because of backend error" + r
+          );
+        }
+      })
+      .catch((r) => {
+        this.errorOnBackend(
+          "Can't add time on resume from suspend because of backend error" + r
         );
       });
   }
