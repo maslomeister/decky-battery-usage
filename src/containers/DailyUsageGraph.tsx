@@ -8,6 +8,7 @@ import {
   Spinner,
 } from "decky-frontend-lib";
 import { BLUE_COLOR } from "../styles";
+import { FaHourglassHalf, FaPercentage } from "react-icons/fa";
 
 type Props = {
   serverApi: ServerAPI;
@@ -76,7 +77,19 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
         data.battery_usage &&
         data.battery_usage.length > 0 &&
         data.games_stats && (
-          <PanelSection title="Usage by game">
+          <PanelSection>
+            <PanelSectionRow>
+              <Field
+                bottomSeparator="none"
+                description="Press to change"
+                label={<div style={{ fontWeight: 600 }}>USAGE BY GAME</div>}
+                onClick={() => {
+                  setShowHours(!showHours);
+                }}
+              >
+                {showHours ? <FaHourglassHalf /> : <FaPercentage />}
+              </Field>
+            </PanelSectionRow>
             {data.games_stats.games.map((item) => (
               <PanelSectionRow>
                 <Field
