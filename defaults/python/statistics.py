@@ -1,13 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from math import floor
 from python.db.dao import Dao
 from typing import List
 from collections import defaultdict
 
-
-def insert_element(data, index, element):
-    data.insert(index, element)
+from python.helpers import calculate_adjusted_percentages, insert_element
 
 
 @dataclass
@@ -40,6 +37,7 @@ class Statistics:
 
     async def hourly_battery_usage_statistics(self):
         if self.stored_statistics:
+            # current_hour = datetime.now().strftime("%H")
             current_hour = datetime.now().strftime("%H")
             last_item_hour = self.stored_statistics[-1]["hour"]
             if current_hour == last_item_hour:
@@ -49,9 +47,13 @@ class Statistics:
                 }
 
         # Calculate the current date
+        # yesterday_date = datetime.now() - timedelta(hours=23)
         yesterday_date = datetime.now() - timedelta(hours=23)
 
         data = self.dao.fetch_per_hour_battery_usage_report(yesterday_date)
+
+        # for item in data:
+        #     print(f"{item.date_time} {item.capacity}% {item.game_name}")
 
         if len(data) == 0:
             self.stored_statistics = []
@@ -133,6 +135,8 @@ class Statistics:
             for entry in data
         ]
 
+        # print(formatted_data)
+
         filled_data = []
 
         start_time = min(dt for dt, _ in formatted_data)
@@ -171,23 +175,19 @@ class Statistics:
                 for game, count in game_entry_count.items()
             }
 
-            total_percentage = sum(game_entry_percentage.values())
-            rounding_error = 100 - total_percentage
-
-            sorted_games = sorted(
-                game_entry_percentage.items(), key=lambda x: x[1], reverse=True
-            )
-
-            if rounding_error != 0:
-                # Determine how to distribute the rounding error
-                adjustment_per_game = rounding_error / len(sorted_games)
-                for i in range(len(sorted_games)):
-                    game, _ = sorted_games[i]
-                    game_entry_percentage[game] += adjustment_per_game
+            # Drop insignificant values
+            threshold = sum(game_entry_percentage.values()) / 100
+            game_entry_percentage = {
+                key: value
+                for key, value in game_entry_percentage.items()
+                if value >= threshold
+            }
+            # Calculate adjusted percentages
+            adjusted_percentages = calculate_adjusted_percentages(game_entry_percentage)
 
             game_entry_percentage_list = [
                 {"game_name": game, "percentage": round(percentage)}
-                for game, percentage in game_entry_percentage.items()
+                for game, percentage in adjusted_percentages.items()
             ]
 
             suspended = next(

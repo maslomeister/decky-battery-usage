@@ -48,7 +48,21 @@ class Plugin:
 
     async def hourly_statistics(self):
         try:
-            return print(await self.statistics.hourly_battery_usage_statistics())
+            result = await self.statistics.hourly_battery_usage_statistics()
+
+            for game in result["game_percentage"]["games"]:
+                print(f"{game['game_name']} - {game['percentage']}%")
+
+            print(f"SUSPENDED - {result["game_percentage"]["suspended"]}%")
+
+            total_percentage = (
+                sum(game["percentage"] for game in result["game_percentage"]["games"])
+                + result["game_percentage"]["suspended"]
+            )
+
+            print(f"TOTAL - {total_percentage}")
+
+            return result
         except Exception as e:
             print(f"Error: {e}")
 
