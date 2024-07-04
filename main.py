@@ -79,6 +79,36 @@ class Plugin:
         except Exception as e:
             logger.exception(f"Unhandled exception: {e}")
 
+    async def add_time(self, game_id, game_name):
+        try:
+            volt_file = open(battery_volt_dir)
+            curr_file = open(battery_curr_dir)
+            cap_file = open(battery_capacity_dir)
+            status = open(battery_status_dir)
+
+            volt_file.seek(0)
+            curr_file.seek(0)
+            cap_file.seek(0)
+            status.seek(0)
+            volt = int(volt_file.read().strip())
+            curr = int(curr_file.read().strip())
+            cap = int(cap_file.read().strip())
+            stat = status.read().strip()
+            if stat == "Discharging":
+                stat = -1
+            elif stat == "Charging":
+                stat = 1
+            else:
+                stat = 0
+            power = int(volt * curr * 10.0**-11)
+            curr_time = time.time()
+
+            self.usage_tracking.add_time(
+                curr_time, cap, stat, power, game_id, game_name
+            )
+        except Exception as e:
+            logger.exception(f"Unhandled exception: {e}")
+
     async def recorder(self):
         volt_file = open(battery_volt_dir)
         curr_file = open(battery_curr_dir)
