@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from math import floor
 
 
 DATE_FORMAT = "%Y-%m-%d"
@@ -57,3 +58,10 @@ def calculate_adjusted_percentages(game_entry_percentage):
         floored_percentages[sorted_fractional_parts[i][0]] += 1
 
     return floored_percentages
+
+
+def minutes_to_hours_string(minutes):
+    rounded = floor(minutes / 60)
+    if rounded < 1:
+        return "<1H"
+    return f"~{rounded}H"
