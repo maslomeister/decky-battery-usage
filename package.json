@@ -1,6 +1,6 @@
 {
   "name": "decky-battery-usage",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Decky plugin to monitor battery usage of your Steam Deck",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
