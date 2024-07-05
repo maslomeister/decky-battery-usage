@@ -195,31 +195,16 @@ class Statistics:
             game_entry_count = {
                 key: value
                 for key, value in game_entry_count.items()
-                if value >= threshold
+                if key in game_entry_percentage
             }
             # Calculate adjusted percentages
             adjusted_percentages = calculate_adjusted_percentages(game_entry_percentage)
-
-            # game_entry_percentage_list = [
-            #     {"game_name": game, "percentage": round(percentage)}
-            #     for game, percentage in adjusted_percentages.items()
-            # ]
 
             suspended = adjusted_percentages.pop("SUSPENDED", 0)
             suspended_hours = minutes_to_hours_string(
                 game_entry_count.pop("SUSPENDED", 0)
             )
 
-            # filtered_game_percentage = [
-            #     item
-            #     for item in game_entry_percentage_list
-            #     if item["game_name"] != "SUSPENDED"
-            # ]
-
-            # sorted_game_percentage = sorted(
-            #     filtered_game_percentage, key=lambda x: x["percentage"], reverse=True
-            # )
-            # print(game_entry_count)
             games_list = []
             for item in game_entry_count:
                 games_list.append(
