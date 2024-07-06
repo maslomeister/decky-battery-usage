@@ -63,7 +63,7 @@ class Statistics:
 
         data = self.dao.fetch_per_hour_battery_usage_report(yesterday_date)
 
-        if len(data) == 0:
+        if len(data) <= 2:
             self.stored_statistics = []
             self.games_stats = {"games": [], "suspended": {"percentage": 0, "hours": 0}}
             return {
@@ -122,18 +122,22 @@ class Statistics:
         for item in aggregated_data:
             item["hour"] = f"{item['hour']:02d}"
 
-        for i in range(len(aggregated_data) - 1):  # Exclude the last item in the range
-            if (
-                aggregated_data[i]["capacity"] > aggregated_data[i - 1]["capacity"]
-                or aggregated_data[i]["capacity"] < aggregated_data[i + 1]["capacity"]
-            ):
-                aggregated_data[i]["charging"] = 100
+        if len(aggregated_data) > 2:
+            for i in range(
+                len(aggregated_data) - 1
+            ):  # Exclude the last item in the range
+                if (
+                    aggregated_data[i]["capacity"] > aggregated_data[i - 1]["capacity"]
+                    or aggregated_data[i]["capacity"]
+                    < aggregated_data[i + 1]["capacity"]
+                ):
+                    aggregated_data[i]["charging"] = 100
 
-        if aggregated_data[0]["capacity"] < aggregated_data[1]["capacity"]:
-            aggregated_data[-0]["charging"] = 100
+            if aggregated_data[0]["capacity"] < aggregated_data[1]["capacity"]:
+                aggregated_data[-0]["charging"] = 100
 
-        if aggregated_data[-2]["capacity"] < aggregated_data[-1]["capacity"]:
-            aggregated_data[-1]["charging"] = 100
+            if aggregated_data[-2]["capacity"] < aggregated_data[-1]["capacity"]:
+                aggregated_data[-1]["charging"] = 100
 
         game_entry_count = defaultdict(int)
 
