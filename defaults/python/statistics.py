@@ -72,10 +72,37 @@ class Statistics:
             }
 
         data_by_hour = defaultdict(list)
+        games_pecentages = {}
 
         for entry in data:
             dt = datetime.strptime(entry.date_time, "%Y-%m-%d %H %M")
             hour = dt.hour  # Extract only the hour part as an integer
+            if entry.status == -1:
+                if entry.game_name in games_pecentages:
+                    if (
+                        games_pecentages[entry.game_name]["last_charge"]
+                        < entry.capacity
+                    ):
+                        games_pecentages[entry.game_name]["last_charge"] = (
+                            entry.capacity
+                        )
+                    else:
+                        total_charge = (
+                            games_pecentages[entry.game_name]["last_charge"]
+                            - entry.capacity
+                        )
+                        games_pecentages[entry.game_name]["total_charge"] += (
+                            total_charge
+                        )
+                        games_pecentages[entry.game_name]["last_charge"] = (
+                            entry.capacity
+                        )
+                else:
+                    games_pecentages[entry.game_name] = {
+                        "last_charge": entry.capacity,
+                        "total_charge": 0,
+                    }
+
             data_by_hour[hour].append(entry)
 
         aggregated_data = []
@@ -201,10 +228,13 @@ class Statistics:
                 for key, value in game_entry_count.items()
                 if key in game_entry_percentage
             }
-            # Calculate adjusted percentages
-            adjusted_percentages = calculate_adjusted_percentages(game_entry_percentage)
 
-            suspended = adjusted_percentages.pop("SUSPENDED", 0)
+            games_pecentages = {
+                key: value
+                for key, value in games_pecentages.items()
+                if key in game_entry_percentage
+            }
+
             suspended_hours = minutes_to_hours_string(
                 game_entry_count.pop("SUSPENDED", 0)
             )
@@ -214,14 +244,13 @@ class Statistics:
                 games_list.append(
                     {
                         "game_name": item,
-                        "percentage": adjusted_percentages[item],
+                        "percentage": games_pecentages[item]["total_charge"],
                         "hours": minutes_to_hours_string(game_entry_count[item]),
                     }
                 )
-
             self.games_stats = {
                 "games": games_list,
-                "suspended": {"percentage": suspended, "hours": suspended_hours},
+                "suspended": {"percentage": 0, "hours": suspended_hours},
             }
 
         self.stored_statistics = aggregated_data

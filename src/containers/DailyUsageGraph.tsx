@@ -8,7 +8,8 @@ import {
   Spinner,
 } from "decky-frontend-lib";
 import { BLUE_COLOR } from "../styles";
-import { FaHourglassHalf, FaPercentage } from "react-icons/fa";
+import { FaHourglassHalf, FaInfoCircle, FaPercentage } from "react-icons/fa";
+import { VerticalContainer } from "../components/VerticalContainer";
 
 type Props = {
   serverApi: ServerAPI;
@@ -105,7 +106,7 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
                 </Field>
               </PanelSectionRow>
             ))}
-            {data.games_stats.suspended.percentage > 0 && (
+            {showHours && (
               <div style={{ fontWeight: 600 }}>
                 <PanelSectionRow>
                   <Field
@@ -115,12 +116,17 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
                       setShowHours(!showHours);
                     }}
                   >
-                    {showHours
-                      ? data.games_stats.suspended.hours
-                      : data.games_stats.suspended.percentage + "%"}
+                    {data.games_stats.suspended.hours}
                   </Field>
                 </PanelSectionRow>
               </div>
+            )}
+            {!showHours && data.games_stats.games.length === 0 && (
+              <VerticalContainer>
+                <div style={{ fontSize: "14px", textAlign: "center" }}>
+                  NO GAMES PLAYED ON BATTERY
+                </div>
+              </VerticalContainer>
             )}
           </PanelSection>
         )}
