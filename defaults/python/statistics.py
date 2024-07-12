@@ -74,7 +74,7 @@ class Statistics:
         data_by_hour = defaultdict(list)
         games_pecentages = {}
 
-        for entry in data:
+        for i, entry in enumerate(data):
             dt = datetime.strptime(entry.date_time, "%Y-%m-%d %H %M")
             hour = dt.hour  # Extract only the hour part as an integer
             if entry.status == -1:
@@ -82,10 +82,12 @@ class Statistics:
                     if (
                         games_pecentages[entry.game_name]["last_charge"]
                         < entry.capacity
+                        or i - games_pecentages[entry.game_name]["last_pos"] > 2
                     ):
                         games_pecentages[entry.game_name]["last_charge"] = (
                             entry.capacity
                         )
+                        games_pecentages[entry.game_name]["last_pos"] = i
                     else:
                         total_charge = (
                             games_pecentages[entry.game_name]["last_charge"]
@@ -97,10 +99,12 @@ class Statistics:
                         games_pecentages[entry.game_name]["last_charge"] = (
                             entry.capacity
                         )
+                        games_pecentages[entry.game_name]["last_pos"] = i
                 else:
                     games_pecentages[entry.game_name] = {
                         "last_charge": entry.capacity,
                         "total_charge": 0,
+                        "last_pos": i,
                     }
 
             data_by_hour[hour].append(entry)

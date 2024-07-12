@@ -73,6 +73,8 @@ class Plugin:
         try:
             result = await self.statistics.hourly_battery_usage_statistics()
 
+            print(result)
+
             for game in result["games_stats"]["games"]:
                 print(f"{game['game_name']} - {game['percentage']}% - {game["hours"]}")
 
