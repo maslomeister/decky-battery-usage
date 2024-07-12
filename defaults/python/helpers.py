@@ -61,7 +61,12 @@ def calculate_adjusted_percentages(game_entry_percentage):
 
 
 def minutes_to_hours_string(minutes):
-    rounded = floor(minutes / 60)
-    if rounded < 1:
-        return "<1H"
-    return f"~{rounded}H"
+    hours = minutes // 60
+    minutes = minutes % 60
+    if hours < 1:
+        return f"~{minutes}M"
+
+    if minutes == 0:
+        return f"~{hours}H"
+
+    return f"~{hours}H{minutes}M"
