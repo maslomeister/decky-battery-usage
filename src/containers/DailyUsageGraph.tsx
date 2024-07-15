@@ -7,9 +7,10 @@ import {
   ServerAPI,
   Spinner,
 } from "decky-frontend-lib";
-import { BLUE_COLOR } from "../styles";
-import { FaHourglassHalf, FaInfoCircle, FaPercentage } from "react-icons/fa";
+import { BLUE_COLOR, unstyled_p } from "../styles";
+import { MdElectricBolt, MdPercent } from "react-icons/md";
 import { VerticalContainer } from "../components/VerticalContainer";
+import { HorizontalContainer } from "../components/HorizontalContainer";
 
 type Props = {
   serverApi: ServerAPI;
@@ -19,12 +20,11 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
   const [data, setData] = useState<{
     battery_usage: { hour: string; capacity: number; charging: number }[];
     games_stats: {
-      games: { game_name: string; percentage: number; hours: string }[];
-      suspended: { percentage: number; hours: string };
+      games: { game_name: string; percentage: number; watts: number }[];
     };
   }>();
   const [loading, setLoading] = useState(true);
-  const [showHours, setShowHours] = useState(false);
+  const [showWatts, setShowWatts] = useState(false);
 
   useEffect(() => {
     // console.log("mount get data");
@@ -35,8 +35,7 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
         {
           battery_usage: { hour: string; capacity: number; charging: number }[];
           games_stats: {
-            games: { game_name: string; percentage: number; hours: string }[];
-            suspended: { percentage: number; hours: string };
+            games: { game_name: string; percentage: number; watts: number }[];
           };
         }
       >("hourly_statistics", {});
@@ -82,13 +81,20 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
             <PanelSectionRow>
               <Field
                 bottomSeparator="none"
-                description="Press to change"
+                description={
+                  <HorizontalContainer>
+                    <p style={unstyled_p}>Press to change</p>
+                    <p style={unstyled_p}>
+                      {showWatts ? "Average" : "Overall"}
+                    </p>
+                  </HorizontalContainer>
+                }
                 label={<div style={{ fontWeight: 600 }}>USAGE BY GAME</div>}
                 onClick={() => {
-                  setShowHours(!showHours);
+                  setShowWatts(!showWatts);
                 }}
               >
-                {showHours ? <FaHourglassHalf /> : <FaPercentage />}
+                {showWatts ? <MdElectricBolt /> : <MdPercent />}
               </Field>
             </PanelSectionRow>
             {data.games_stats.games.map((item) => (
@@ -97,34 +103,36 @@ export const DailyUsageGraph = ({ serverApi }: Props) => {
                   label={item.game_name}
                   inlineWrap="keep-inline"
                   onClick={() => {
-                    setShowHours(!showHours);
+                    setShowWatts(!showWatts);
                   }}
                 >
-                  <div style={{ fontWeight: 600, color: BLUE_COLOR }}>
-                    {showHours ? item.hours : item.percentage + "%"}
-                  </div>
+                  <p
+                    style={{
+                      ...unstyled_p,
+                      fontWeight: 600,
+                      color: BLUE_COLOR,
+                    }}
+                  >
+                    {showWatts ? (
+                      <>
+                        {"~" + item.watts}
+                        <span
+                          style={{ fontSize: "10px", verticalAlign: "top" }}
+                        >
+                          W
+                        </span>
+                      </>
+                    ) : (
+                      item.percentage + "%"
+                    )}
+                  </p>
                 </Field>
               </PanelSectionRow>
             ))}
-            {showHours && (
-              <div style={{ fontWeight: 600 }}>
-                <PanelSectionRow>
-                  <Field
-                    inlineWrap="keep-inline"
-                    label="SUSPENDED"
-                    onClick={() => {
-                      setShowHours(!showHours);
-                    }}
-                  >
-                    {data.games_stats.suspended.hours}
-                  </Field>
-                </PanelSectionRow>
-              </div>
-            )}
-            {!showHours && data.games_stats.games.length === 0 && (
+            {!showWatts && data.games_stats.games.length === 0 && (
               <VerticalContainer>
                 <div style={{ fontSize: "14px", textAlign: "center" }}>
-                  NO GAMES PLAYED ON BATTERY
+                  NO BATTERY USAGE DETECTED
                 </div>
               </VerticalContainer>
             )}

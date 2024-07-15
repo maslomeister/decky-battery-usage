@@ -76,18 +76,7 @@ class Plugin:
             print(result)
 
             for game in result["games_stats"]["games"]:
-                print(f"{game['game_name']} - {game['percentage']}% - {game["hours"]}")
-
-            print(
-                f"SUSPENDED - {result["games_stats"]["suspended"]["percentage"]}% - {result["games_stats"]["suspended"]["hours"]}"
-            )
-
-            total_percentage = (
-                sum(game["percentage"] for game in result["games_stats"]["games"])
-                + result["games_stats"]["suspended"]["percentage"]
-            )
-
-            print(f"TOTAL - {total_percentage}")
+                print(f"{game['game_name']} - {game['percentage']}% - {game["watts"]}")
 
             return result
         except Exception as e:

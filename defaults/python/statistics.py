@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from math import floor
 from python.db.dao import Dao
 from typing import List
 from collections import defaultdict
 
 from python.helpers import (
-    calculate_adjusted_percentages,
     insert_element,
-    minutes_to_hours_string,
 )
 
 
@@ -21,13 +20,13 @@ class UsageItem:
 class GameItem:
     game_name: str
     percentage: int
-    hours: str
+    watts: float
 
 
 @dataclass
 class Suspended:
     percentage: int
-    hours: str
+    watts: float
 
 
 @dataclass
@@ -100,20 +99,32 @@ class Statistics:
                             entry.capacity
                         )
                         games_pecentages[entry.game_name]["last_pos"] = i
+
+                        games_pecentages[entry.game_name]["amount"] += 1
+
+                        games_pecentages[entry.game_name]["total_power"] += entry.power
                 else:
                     games_pecentages[entry.game_name] = {
                         "last_charge": entry.capacity,
                         "total_charge": 0,
                         "last_pos": i,
+                        "amount": 0,
+                        "total_power": 0,
                     }
 
             data_by_hour[hour].append(entry)
 
         aggregated_data = []
+        print(games_pecentages)
+
         for hour, entries in data_by_hour.items():
             last_entry = min(entries, key=lambda x: x.capacity)
             aggregated_data.append(
-                {"hour": hour, "capacity": last_entry.capacity, "charging": 0}
+                {
+                    "hour": hour,
+                    "capacity": last_entry.capacity,
+                    "charging": 0,
+                }
             )
         i = 0
 
@@ -170,92 +181,23 @@ class Statistics:
             if aggregated_data[-2]["capacity"] < aggregated_data[-1]["capacity"]:
                 aggregated_data[-1]["charging"] = 100
 
-        game_entry_count = defaultdict(int)
+        games_list = []
+        for item in games_pecentages:
+            if games_pecentages[item]["total_charge"] > 0:
+                watts = (games_pecentages[item]["total_power"] / 10) / games_pecentages[
+                    item
+                ]["amount"]
 
-        # Step 2: Convert date_time to datetime objects
-        formatted_data = [
-            (datetime.strptime(entry.date_time, "%Y-%m-%d %H %M"), entry.game_name)
-            for entry in data
-        ]
-
-        # print(formatted_data)
-
-        filled_data = []
-
-        start_time = min(dt for dt, _ in formatted_data)
-        end_time = max(dt for dt, _ in formatted_data)
-
-        current_time = start_time
-        formatted_data_dict = dict(
-            formatted_data
-        )  # Convert list to dictionary for easy lookup
-
-        while current_time <= end_time:
-            if current_time in formatted_data_dict:
-                filled_data.append(
-                    {
-                        "date_time": current_time.strftime("%Y-%m-%d %H %M"),
-                        "game_name": formatted_data_dict[current_time],
-                    }
-                )
-            else:
-                filled_data.append(
-                    {
-                        "date_time": current_time.strftime("%Y-%m-%d %H %M"),
-                        "game_name": "SUSPENDED",
-                    }
-                )
-            current_time += timedelta(minutes=1)
-
-        for entry in filled_data:
-            game_entry_count[entry["game_name"]] += 1
-
-        total_entries = len(filled_data)
-
-        if total_entries > 0:
-            game_entry_percentage = {
-                game: (count / total_entries) * 100
-                for game, count in game_entry_count.items()
-            }
-
-            # Drop insignificant values
-            threshold = sum(game_entry_percentage.values()) / 100
-
-            game_entry_percentage = {
-                key: value
-                for key, value in game_entry_percentage.items()
-                if value >= threshold
-            }
-
-            game_entry_count = {
-                key: value
-                for key, value in game_entry_count.items()
-                if key in game_entry_percentage
-            }
-
-            games_pecentages = {
-                key: value
-                for key, value in games_pecentages.items()
-                if key in game_entry_percentage
-            }
-
-            suspended_hours = minutes_to_hours_string(
-                game_entry_count.pop("SUSPENDED", 0)
-            )
-
-            games_list = []
-            for item in game_entry_count:
                 games_list.append(
                     {
                         "game_name": item,
                         "percentage": games_pecentages[item]["total_charge"],
-                        "hours": minutes_to_hours_string(game_entry_count[item]),
+                        "watts": floor(watts * 10) / 10,
                     }
                 )
-            self.games_stats = {
-                "games": games_list,
-                "suspended": {"percentage": 0, "hours": suspended_hours},
-            }
+        self.games_stats = {
+            "games": games_list,
+        }
 
         self.stored_statistics = aggregated_data
 

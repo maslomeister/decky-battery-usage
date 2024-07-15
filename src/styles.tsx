@@ -22,7 +22,13 @@ export const HorizontalContainerCSS = {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   } as CSSProperties,
+};
+
+export const unstyled_p: CSSProperties = {
+  margin: 0,
+  padding: 0,
 };
 
 export const focus_panel_no_padding: CSSProperties = {
